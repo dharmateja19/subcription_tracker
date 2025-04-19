@@ -335,12 +335,14 @@ while ($sub = mysqli_fetch_assoc($subResult)) {
           $cardClass = $isActive ? 'active' : ($isExpired ? 'expired' : '');
           $subName = strtolower(trim($subscription['subscription_name']));
           $logoURL = "https://logo.clearbit.com/$subName.com";
+          $statusColor = ($subscription['status'] === 'active') ? 'green' : 'red';
         ?>
           <div class="card <?= $cardClass ?>">
             <img src="<?= $logoURL ?>" alt="<?= $subName ?> logo" onerror="this.src='default.png'">
             <h3><?= htmlspecialchars($subscription['subscription_name']) ?></h3>
             <p><strong>Start:</strong> <?= htmlspecialchars($subscription['start_date']) ?></p>
             <p><strong>End:</strong> <?= htmlspecialchars($subscription['end_date']) ?></p>
+            <p><strong>Status:</strong> <span style="color: <?= $statusColor ?>; font-weight: bold;"><?= htmlspecialchars($subscription['status']) ?></span></p>
           </div>
         <?php endforeach; ?>
       </div>

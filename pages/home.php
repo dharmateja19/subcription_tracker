@@ -32,7 +32,7 @@
     <div class="container">
       <h1>Track All Your Subscriptions in One Place</h1>
       <p>Stay ahead of your payments, get notified before anything expires.</p>
-      <a href="register.php" class="btn">Get Started</a>
+      <a href="../templates/register.html" class="btn">Get Started</a>
     </div>
   </section>
 
@@ -54,7 +54,7 @@
         </div>
         <div class="feature-wrapper">
           <div class="feature-card">
-            <img src="img/dashboard.png" alt="Personalized Dashboard" />
+            <img src="../assets/images/dashboard.png" alt="Personalized Dashboard" />
           </div>
           <p class="feature-label">Personalized Dashboard</p>
         </div>
