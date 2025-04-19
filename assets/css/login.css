@@ -1,0 +1,132 @@
+body {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  height: 100vh;
+  background: linear-gradient(to right, #fdfcfb, #e2d1c3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.container {
+  display: flex;
+  width: 90%;
+  max-width: 1100px;
+  height: 600px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.left {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.75);
+  padding: 40px;
+  backdrop-filter: blur(12px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.right {
+  flex: 1;
+  background-color: rgba(255, 255, 255, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.right img {
+  height: auto;
+  width: 450px;
+  object-fit: contain;
+}
+
+form {
+  width: 100%;
+  max-width: 350px;
+  margin: 0 auto;
+}
+
+form h2 {
+  margin-bottom: 20px;
+  color: #ff6f61;
+  text-align: center;
+}
+
+label {
+  margin-top: 10px;
+  color: #333;
+  font-weight: 500;
+  display: block;
+}
+
+input[type="email"],
+input[type="password"],
+input[type="text"] {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  margin-top: 5px;
+  margin-bottom: 10px;
+  font-size: 1rem;
+  background: #fff;
+  box-sizing: border-box;
+  transition: all 0.2s ease-in-out;
+}
+.show-password {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 5px;
+  margin-bottom: 10px;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.show-password input[type="checkbox"] {
+  transform: scale(1.1);
+  cursor: pointer;
+  position: relative;
+  top: 2px;
+}
+
+input[type="checkbox"] {
+  transform: scale(1.1);
+  cursor: pointer;
+}
+
+input[type="submit"] {
+  background-color: #ff6f61;
+  color: white;
+  border: none;
+  padding: 12px 0;
+  width: 100%;
+  font-size: 1rem;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: 0.3s ease;
+  margin-top: 10px;
+}
+
+input[type="submit"]:hover {
+  background-color: #ff8a75;
+}
+
+p {
+  text-align: center;
+  margin-top: 15px;
+  font-size: 0.95rem;
+  color: #444;
+}
+
+a {
+  color: #ff6f61;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+a:hover {
+  text-decoration: underline;
+}

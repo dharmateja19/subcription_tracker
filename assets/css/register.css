@@ -1,0 +1,137 @@
+body {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  min-height: 100vh;
+  background: linear-gradient(to right, #fdfcfb, #e2d1c3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.container {
+  display: flex;
+  flex-direction: row;
+  width: 95%;
+  max-width: 1200px;
+  height: 700px; /* Increased height */
+  background: #fff;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+  border-radius: 24px;
+  overflow: hidden;
+}
+
+/* Left section - form */
+.left {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 50px 40px;
+  backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+form {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+form h2 {
+  text-align: center;
+  color: #ff6f61;
+  margin-bottom: 24px;
+}
+
+label {
+  display: block;
+  margin-top: 12px;
+  color: #333;
+  font-weight: 500;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+  width: 100%;
+  padding: 12px;
+  margin-top: 6px;
+  margin-bottom: 14px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  font-size: 1rem;
+  background: #fff;
+  transition: all 0.2s ease-in-out;
+}
+
+input[type="checkbox"] {
+  transform: scale(1.1);
+  margin-right: 6px;
+}
+
+input[type="submit"] {
+  background-color: #ff6f61;
+  color: white;
+  border: none;
+  padding: 14px 0;
+  width: 100%;
+  font-size: 1rem;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: 0.3s ease;
+  margin-top: 20px;
+}
+
+input[type="submit"]:hover {
+  background-color: #ff8a75;
+}
+
+p {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 0.95rem;
+  color: #444;
+}
+
+a {
+  color: #ff6f61;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Right section - image */
+.right {
+  flex: 1;
+  background-color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.right img {
+  max-width: 90%;
+  max-height: 90%;
+  object-fit: contain;
+}
+.show-password {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 10px 0 20px;
+}
+
+.show-password input[type="checkbox"] {
+  margin: 0;
+}
+
+.show-password label {
+  margin: 0;
+  font-weight: 500;
+  color: #333;
+}

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Register Here</title>
+  <link rel="stylesheet" href="../assets/css/register.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+    <div class="left">
+      <form id="registerForm" method="post" action="../pages//auth/register.php">
+        <h2>Create Your Account</h2>
+
+        <label><b>Name:</b></label>
+        <input type="text" name="name" id="name" placeholder="Enter your name" required>
+
+        <label><b>Email:</b></label>
+        <input type="email" name="email" id="email" placeholder="Enter your email address" required>
+
+        <label><b>Mobile:</b></label>
+        <input type="text" name="mobile_no" id="mobile" placeholder="Enter your mobile number" required>
+
+        <label><b>Password:</b></label>
+        <input type="password" name="password" id="password" placeholder="Set your password" required>
+
+        <div class="show-password">
+          <input type="checkbox" id="togglePassword">
+          <label for="togglePassword">Show Password</label>
+        </div>
+    
+        <input type="submit" value="Register">
+
+        <p>Already a user? <a href="login.html">Login here</a></p>
+      </form>
+    </div>
+
+    <div class="right">
+      <img src="../assets/images/register.png" alt="Register Illustration" />
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("registerForm").addEventListener("submit", function(e) {
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const mobile = document.getElementById("mobile").value.trim();
+      const password = document.getElementById("password").value;
+
+      const nameRegex = /^[A-Za-z\s]{2,}$/;
+      const mobileRegex = /^[6-9]\d{9}$/;
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,12}$/;
+
+      if (!nameRegex.test(name)) {
+        alert("Name should contain at least two characters and only letters and spaces are allowed.");
+        e.preventDefault();
+        return;
+      }
+
+      if (!emailRegex.test(email)) {
+        alert("Please enter a valid email address.");
+        e.preventDefault();
+        return;
+      }
+
+      if (!mobileRegex.test(mobile)) {
+        alert("Mobile number must be 10 digits and start with 6-9.");
+        e.preventDefault();
+        return;
+      }
+
+      if (!passwordRegex.test(password)) {
+        alert("Password must be 8-12 characters and include:\n- One uppercase letter\n- One lowercase letter\n- One digit\n- One special character");
+        e.preventDefault();
+        return;
+      }
+    });
+	
+    document.getElementById("togglePassword").addEventListener("change", function () {
+      const passwordInput = document.getElementById("password");
+      passwordInput.type = this.checked ? "text" : "password";
+    });
+  </script>
+</body>
+</html>

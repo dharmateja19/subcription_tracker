@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Add Subscription</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    form {
+      background: #fff;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 400px;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    input, select, button {
+      padding: 0.75rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    .error-msg {
+      background: #f8d7da;
+      color: #721c24;
+      padding: 0.75rem;
+      border: 1px solid #f5c6cb;
+      border-radius: 8px;
+      font-weight: bold;
+      text-align: center;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <form action="../pages/add_subscription.php" method="post" id="subscriptionForm">
+    <div class="error-msg" id="errorMsg"></div>
+
+    <input type="text" name="subscription_name" placeholder="Subscription Name" required />
+
+    <select name="category" required>
+      <option value="" disabled selected>Select Category</option>
+      <option value="sports">Sports</option>
+      <option value="news">News</option>
+      <option value="entertainment">Entertainment</option>
+      <option value="lifestyle">Lifestyle</option>
+      <option value="technology">Technology</option>
+      <option value="finance">Finance</option>
+      <option value="politics">Politics</option>
+      <option value="other">Other</option>
+    </select>
+
+    <input type="number" name="price" placeholder="Price" step="0.01" min="0.01" required />
+
+    <select name="currency" required>
+      <option value="" disabled selected>Select Currency</option>
+      <option value="USD">USD</option>
+      <option value="INR">INR</option>
+      <option value="EUR">EUR</option>
+    </select>
+
+    <select name="frequency" id="frequency" required>
+      <option value="" disabled selected>Select Frequency</option>
+      <option value="monthly">Monthly</option>
+      <option value="quarterly">Quarterly</option>
+      <option value="halfyearly">Halfyearly</option>
+      <option value="yearly">Yearly</option>
+    </select>
+
+    <input type="date" name="start_date" id="start_date" required />
+
+    <input type="date" name="end_date" id="end_date" readonly hidden />
+
+    <button type="submit">Add Subscription</button>
+  </form>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const form = document.getElementById("subscriptionForm");
+      const startDateInput = document.getElementById("start_date");
+      const endDateInput = document.getElementById("end_date");
+      const frequencyInput = document.getElementById("frequency");
+      const errorMsg = document.getElementById("errorMsg");
+
+      const today = new Date().toISOString().split("T")[0];
+      startDateInput.max = today;
+      endDateInput.min = today;
+
+      form.addEventListener("submit", function (event) {
+        const startDate = new Date(startDateInput.value);
+        const now = new Date();
+
+        if (startDate > now) {
+          event.preventDefault();
+          showError("Start date cannot be in the future.");
+          return;
+        }
+
+        const endDate = new Date(endDateInput.value);
+        if (endDate < now) {
+          event.preventDefault();
+          showError("End date cannot be in the past.");
+          return;
+        }
+
+        if (!endDateInput.value) {
+          calculateEndDate(startDate, frequencyInput.value);
+        }
+      });
+
+      startDateInput.addEventListener("change", function () {
+        const startDate = new Date(startDateInput.value);
+        calculateEndDate(startDate, frequencyInput.value);
+      });
+
+      frequencyInput.addEventListener("change", function () {
+        const startDate = new Date(startDateInput.value);
+        calculateEndDate(startDate, frequencyInput.value);
+      });
+
+      function calculateEndDate(startDate, frequency) {
+        let monthsToAdd = 0;
+        if (frequency === "monthly") monthsToAdd = 1;
+        else if (frequency === "quarterly") monthsToAdd = 3;
+        else if (frequency === "halfyearly") monthsToAdd = 6;
+        else if (frequency === "yearly") monthsToAdd = 12;
+
+        const calculatedEndDate = new Date(startDate);
+        calculatedEndDate.setMonth(calculatedEndDate.getMonth() + monthsToAdd);
+
+        const yyyy = calculatedEndDate.getFullYear();
+        const mm = String(calculatedEndDate.getMonth() + 1).padStart(2, "0");
+        const dd = String(calculatedEndDate.getDate()).padStart(2, "0");
+        endDateInput.value = `${yyyy}-${mm}-${dd}`;
+      }
+
+      function showError(message) {
+        errorMsg.textContent = message;
+        errorMsg.style.display = "block";
+        setTimeout(() => {
+          errorMsg.style.opacity = 0;
+          setTimeout(() => {
+            errorMsg.style.display = "none";
+            errorMsg.style.opacity = 1;
+          }, 500);
+        }, 3000);
+      }
+    });
+  </script>
+</body>
+</html>
