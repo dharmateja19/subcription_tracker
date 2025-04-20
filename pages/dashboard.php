@@ -3,15 +3,15 @@ require '../config/database.php';
 session_start();
 
 if (!isset($_SESSION['user_id'])) {
-    header("Location: home.php");
+  header("Location: home.php");
 }
-$isLoggedIn = isset($_SESSION['user_id']); 
+$isLoggedIn = isset($_SESSION['user_id']);
 $statusMessage = '';
 if (isset($_SESSION['msg'])) {
-    $msgClass = ($_SESSION['msg_type'] === 'success') ? 'success-msg' : 'error-msg';
-    $statusMessage = "<div id='statusMsg' class='$msgClass'>{$_SESSION['msg']}</div>";
-    unset($_SESSION['msg']);
-    unset($_SESSION['msg_type']);
+  $msgClass = ($_SESSION['msg_type'] === 'success') ? 'success-msg' : 'error-msg';
+  $statusMessage = "<div id='statusMsg' class='$msgClass'>{$_SESSION['msg']}</div>";
+  unset($_SESSION['msg']);
+  unset($_SESSION['msg_type']);
 }
 
 $user_id = $_SESSION['user_id'];
@@ -19,7 +19,7 @@ $user_id = $_SESSION['user_id'];
 $userQuery = "SELECT name, email, mobile FROM users WHERE id = '$user_id'";
 $userResult = mysqli_query($conn, $userQuery);
 if (!$userResult) {
-    die("User query failed: " . mysqli_error($conn));
+  die("User query failed: " . mysqli_error($conn));
 }
 $user = mysqli_fetch_assoc($userResult);
 $today = date('Y-m-d');
@@ -38,10 +38,10 @@ $activateStatusQuery = "
 ";
 mysqli_query($conn, $activateStatusQuery);
 
-$subQuery = "SELECT subscription_name, start_date, end_date, status FROM subscriptions WHERE user_id = '$user_id'";
+$subQuery = "SELECT subscription_name,category,id,price,frequency,currency, start_date, end_date, status FROM subscriptions WHERE user_id = '$user_id'";
 $subResult = mysqli_query($conn, $subQuery);
 if (!$subResult) {
-    die("Subscription query failed: " . mysqli_error($conn));
+  die("Subscription query failed: " . mysqli_error($conn));
 }
 
 $totalSubscriptions = mysqli_num_rows($subResult);
@@ -50,244 +50,26 @@ $expiredCount = 0;
 $subscriptions = [];
 
 while ($sub = mysqli_fetch_assoc($subResult)) {
-    $subscriptions[] = $sub;
-    if ($sub['end_date'] >= $today && $sub['start_date'] <= $today) {
-        $activeCount++;
-    } elseif ($sub['end_date'] < $today) {
-        $expiredCount++;
-    }
+  $subscriptions[] = $sub;
+  if ($sub['end_date'] >= $today && $sub['start_date'] <= $today) {
+    $activeCount++;
+  } elseif ($sub['end_date'] < $today) {
+    $expiredCount++;
+  }
 }
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Subscription Dashboard</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      transition: background 0.3s, color 0.3s;
-    }
-
-    body.light-theme {
-      background: #f5f7fa;
-      color: #222;
-      --card-bg: #ffffff;
-      --card-hover-bg: #eaeaea;
-    }
-
-    body.dark-theme {
-      background: #121212;
-      color: #eee;
-      --card-bg: #1e1e1e;
-      --card-hover-bg: #2c2c2c;
-    }
-
-    .top-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 20px 40px;
-    }
-
-    .top-bar h1 {
-      font-size: 1.8rem;
-      color: #ff6f61;
-      margin: 0;
-    }
-
-    .theme-toggle button {
-      padding: 8px 16px;
-      background: #ff6f61;
-      border: none;
-      border-radius: 8px;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .dashboard {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 30px;
-      padding: 20px 40px;
-      justify-content: center;
-    }
-
-    .user-info {
-      flex: 1;
-      min-width: 280px;
-      max-width: 350px;
-      padding: 30px;
-      border-radius: 20px;
-      background: var(--card-bg);
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.07);
-    }
-
-    .user-info h2 {
-      color: #ff6f61;
-      margin-bottom: 15px;
-    }
-
-    .user-info p {
-      font-size: 1rem;
-      margin: 10px 0;
-    }
-
-    .subscriptions {
-      flex: 2;
-      min-width: 400px;
-    }
-
-    .subscriptions h2 {
-      margin-bottom: 20px;
-      font-size: 1.5rem;
-      color: #ff6f61;
-    }
-
-    .subscription-cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
-    }
-
-    .card {
-      border-left: 6px solid transparent;
-      border-radius: 16px;
-      padding: 20px;
-      background: var(--card-bg);
-      transition: transform 0.2s ease, background-color 0.3s ease;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
-      cursor: pointer;
-    }
-
-    .card:hover {
-      transform: translateY(-5px);
-      background-color: var(--card-hover-bg);
-    }
-
-    .card h3 {
-      margin-top: 10px;
-    }
-
-    .card p {
-      font-size: 0.95rem;
-      margin: 6px 0;
-    }
-
-    .card img {
-      width: 40px;
-      height: 40px;
-      object-fit: contain;
-      display: block;
-    }
-
-    .active {
-      border-left: 6px solid #4CAF50;
-    }
-
-    .expired {
-      border-left: 6px solid #f44336;
-    }
-
-    .add-sub-btn {
-        margin-top: 20px;
-        padding: 10px 20px;
-        background-color: #ff6f61;
-        color: white;
-        font-size: 1rem;
-        font-weight: bold;
-        border: none;
-        border-radius: 10px;
-        cursor: pointer;
-        transition: background-color 0.3s ease, transform 0.2s ease;
-    }
-
-    .add-sub-btn:hover {
-        background-color: #ff3b2f;
-        transform: scale(1.05);
-    }
-
-    .success-msg, .error-msg {
-      padding: 12px;
-      margin: 15px 40px 0 40px;
-      border-radius: 8px;
-      font-weight: bold;
-      opacity: 1;
-    }
-
-    .success-msg {
-      background-color: #d4edda;
-      color: #155724;
-      border: 1px solid #c3e6cb;
-    }
-
-    .error-msg {
-      background-color: #f8d7da;
-      color: #721c24;
-      border: 1px solid #f5c6cb;
-    }
-    .filter-buttons {
-      margin-bottom: 20px;
-    }
-
-    .filter-buttons button {
-      margin-right: 10px;
-      padding: 8px 16px;
-      border: none;
-      border-radius: 8px;
-      font-weight: bold;
-      cursor: pointer;
-      background-color: #ff6f61;
-      color: white;
-    }
-
-    .filter-buttons button.active-btn {
-      background-color: #555;
-    }
-    header {
-    background: rgba(255, 255, 255, 0.85);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 50px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-  }
-  
-  .logo {
-    font-size: 1.8rem;
-    font-weight: 600;
-    color: #ff6f61;
-  }
-  
-  nav a {
-    margin-left: 24px;
-    text-decoration: none;
-    color: #333;
-    font-weight: 500;
-    transition: color 0.3s ease;
-  }
-  
-  nav a:hover {
-    color: #ff6f61;
-  }
-
-    footer {
-      text-align: center;
-      padding: 30px 20px;
-      background: rgba(255, 255, 255, 0.85);
-      color: #555;
-      font-size: 0.9rem;
-    }
-  </style>
+  <link href="../assets/css/dashboard.css" rel="stylesheet">
 </head>
+
 <body class="light-theme">
-<header>
+  <header>
     <div class="logo">Subscription Tracking</div>
     <nav>
       <a href="home.php">Home</a>
@@ -329,7 +111,7 @@ while ($sub = mysqli_fetch_assoc($subResult)) {
         <button onclick="filterCards('expired')">Expired</button>
       </div>
       <div class="subscription-cards">
-        <?php foreach ($subscriptions as $subscription): 
+        <?php foreach ($subscriptions as $subscription):
           $isActive = ($subscription['end_date'] >= $today && $subscription['start_date'] <= $today);
           $isExpired = ($subscription['end_date'] < $today);
           $cardClass = $isActive ? 'active' : ($isExpired ? 'expired' : '');
@@ -342,11 +124,68 @@ while ($sub = mysqli_fetch_assoc($subResult)) {
             <h3><?= htmlspecialchars($subscription['subscription_name']) ?></h3>
             <p><strong>Start:</strong> <?= htmlspecialchars($subscription['start_date']) ?></p>
             <p><strong>End:</strong> <?= htmlspecialchars($subscription['end_date']) ?></p>
+            <p><strong>Price:</strong> <?= htmlspecialchars($subscription['price']) ?></p>
+            <p><strong>Category:</strong> <?= htmlspecialchars($subscription['category']) ?></p>
             <p><strong>Status:</strong> <span style="color: <?= $statusColor ?>; font-weight: bold;"><?= htmlspecialchars($subscription['status']) ?></span></p>
+            <div class="subscription-actions">
+              <form action="delete_subscription.php" method="post" id="deleteForm">
+                <input type="hidden" name="subscription_name" value="<?= htmlspecialchars($subscription['subscription_name']) ?>">
+                <button type="button" class="delete-btn" onclick="confirmDelete(event)">Delete</button>
+              </form>
+              <button class="update-btn"
+                data-subscription='<?= json_encode($subscription) ?>'
+                onclick="openUpdateModal(this)">
+                Update
+              </button>
+            </div>
           </div>
         <?php endforeach; ?>
       </div>
     </div>
+  </div>
+  <div id="editModal" class="modal">
+    <form id="editForm" action="update_subscription.php" method="POST">
+      <div class="error-msg" id="editErrorMsg"></div>
+
+      <input type="hidden" name="original_name" id="originalName" />
+
+      <input type="text" name="subscription_name" id="editName" placeholder="Subscription Name" required />
+
+      <select name="category" id="editCategory" required>
+        <option value="" disabled>Select Category</option>
+        <option value="sports">Sports</option>
+        <option value="news">News</option>
+        <option value="entertainment">Entertainment</option>
+        <option value="lifestyle">Lifestyle</option>
+        <option value="technology">Technology</option>
+        <option value="finance">Finance</option>
+        <option value="politics">Politics</option>
+        <option value="other">Other</option>
+      </select>
+
+      <input type="number" name="price" id="editPrice" placeholder="Price" step="0.01" min="0.01" required />
+
+      <select name="currency" id="editCurrency" required>
+        <option value="" disabled>Select Currency</option>
+        <option value="USD">USD</option>
+        <option value="INR">INR</option>
+        <option value="EUR">EUR</option>
+      </select>
+
+      <select name="frequency" id="editFrequency" required>
+        <option value="" disabled>Select Frequency</option>
+        <option value="monthly">Monthly</option>
+        <option value="quarterly">Quarterly</option>
+        <option value="halfyearly">Halfyearly</option>
+        <option value="yearly">Yearly</option>
+      </select>
+
+      <input type="date" name="start_date" id="editStartDate" required />
+      <input type="date" name="end_date" id="editEndDate" readonly hidden />
+
+      <button type="submit">Update Subscription</button>
+      <button type="button" onclick="closeModal()">Cancel</button>
+    </form>
   </div>
   <footer>
     <div class="footer-content">
@@ -362,11 +201,10 @@ while ($sub = mysqli_fetch_assoc($subResult)) {
     toggleBtn.addEventListener('click', () => {
       body.classList.toggle('dark-theme');
       body.classList.toggle('light-theme');
-      toggleBtn.textContent = body.classList.contains('dark-theme')
-        ? '☀ Switch Theme'
-        : '🌙 Switch Theme';
+      toggleBtn.textContent = body.classList.contains('dark-theme') ?
+        '☀ Switch Theme' :
+        '🌙 Switch Theme';
     });
-
     const statusMsg = document.getElementById('statusMsg');
     if (statusMsg) {
       setTimeout(() => {
@@ -375,6 +213,71 @@ while ($sub = mysqli_fetch_assoc($subResult)) {
         setTimeout(() => statusMsg.remove(), 500);
       }, 3000);
     }
+
+    function openUpdateModal(button) {
+      console.log('update called');
+      const modal = document.getElementById('editModal');
+      const subscriptionData = JSON.parse(button.getAttribute('data-subscription'));
+
+      const editCategory = document.getElementById('editCategory');
+      if (!editCategory) {
+        console.error('Element with ID editCategory not found');
+        return;
+      }
+
+      document.getElementById('originalName').value = subscriptionData.subscription_name;
+      document.getElementById('editName').value = subscriptionData.subscription_name;
+      document.getElementById('editCategory').value = subscriptionData.category || '';
+      document.getElementById('editPrice').value = subscriptionData.price || '';
+      document.getElementById('editCurrency').value = subscriptionData.currency || '';
+      document.getElementById('editFrequency').value = subscriptionData.frequency || '';
+      document.getElementById('editStartDate').value = subscriptionData.start_date || '';
+      calculateEditEndDate(new Date(subscriptionData.start_date), subscriptionData.frequency);
+
+      modal.classList.add('open');
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('editModal');
+      modal.classList.remove('open');
+      document.getElementById('editErrorMsg').textContent = '';
+    }
+
+    function calculateEditEndDate(startDate, frequency) {
+      let months = 0;
+      if (frequency === "monthly") months = 1;
+      else if (frequency === "quarterly") months = 3;
+      else if (frequency === "halfyearly") months = 6;
+      else if (frequency === "yearly") months = 12;
+
+      const endDate = new Date(startDate);
+      endDate.setMonth(endDate.getMonth() + months);
+
+      const yyyy = endDate.getFullYear();
+      const mm = String(endDate.getMonth() + 1).padStart(2, "0");
+      const dd = String(endDate.getDate()).padStart(2, "0");
+
+      document.getElementById('editEndDate').value = `${yyyy}-${mm}-${dd}`;
+    }
+
+    document.querySelectorAll('.update-btn').forEach(button => {
+      button.addEventListener('click', () => openUpdateModal(button));
+    });
+
+    document.getElementById('editFrequency').addEventListener('change', (e) => {
+      const startDate = document.getElementById('editStartDate').value;
+      if (startDate) {
+        calculateEditEndDate(new Date(startDate), e.target.value);
+      }
+    });
+
+    document.getElementById('editStartDate').addEventListener('change', (e) => {
+      const frequency = document.getElementById('editFrequency').value;
+      if (frequency) {
+        calculateEditEndDate(new Date(e.target.value), frequency);
+      }
+    });
+
     function filterCards(type) {
       const cards = document.querySelectorAll('.card');
       const buttons = document.querySelectorAll('.filter-buttons button');
@@ -392,6 +295,14 @@ while ($sub = mysqli_fetch_assoc($subResult)) {
         else buttons[2].classList.add('active-btn');
       }
     }
+
+    function confirmDelete(event) {
+      const isConfirmed = confirm("Are you sure you want to delete this subscription?");
+      if (isConfirmed) {
+        event.target.closest('form').submit();
+      }
+    }
   </script>
 </body>
+
 </html>
